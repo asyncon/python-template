@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+pytest-cov = "*"
+flake8 = "*"
+flake8-bugbear = "*"
+black = ">=20.8b1"
+build = "*"
+mkdocs-material = {version = "*", markers = "python_version >= '3.8'"}
+{{ cookiecutter.repo_name }} = {editable = true, path = "."}
+
+[packages]
+
+[scripts]
+setup = "pipenv install --dev --skip-lock"
+test = "pytest"
+docs = "mkdocs serve"
+build = "python -m build"
+# upload = "twine upload dist/*"
+publish = "mkdocs gh-deploy --force"
+clean = "rm -rf .pytest_cache .venv build dist .tox src/{{ cookiecutter.project_slug }}.egg-info tests/__pycache__ .coverage Pipfile.lock"

@@ -1,0 +1,36 @@
+site_name: {{ cookiecutter.repo_name }}
+site_url: https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.repo_name }}/
+site_author: {{ cookiecutter.full_name }}
+site_description: {{ cookiecutter.project_short_description }}
+
+repo_name: {{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}
+repo_url: https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}
+edit_uri: ""
+
+copyright: Copyright &copy; {% now 'local', '%Y' %} {{ cookiecutter.full_name }}
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: orange
+      media: "(prefers-color-scheme: light)"
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep orange
+      accent: blue
+      media: "(prefers-color-scheme: dark)"
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+
+markdown_extensions:
+  - meta
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed
