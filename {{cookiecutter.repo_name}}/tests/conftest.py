@@ -1,4 +1,5 @@
 import pytest
+
 from {{cookiecutter.project_slug}} import __version__
 
 

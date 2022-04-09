@@ -8,18 +8,27 @@ pytest = "*"
 pytest-cov = "*"
 flake8 = "*"
 flake8-bugbear = "*"
-black = ">=20.8b1"
+black = "*"
 build = "*"
-mkdocs-material = {version = "*", markers = "python_version >= '3.8'"}
+isort = "*"
+autoflake = "*"
+pre-commit = "*"
+{%- set year | int %}{% now 'local', '%Y' %}{% endset %}{% set maxpython = year - 2012 %}
+{%- set minpython = cookiecutter.requires_python.split('.')[1] | int %}
+mkdocs-material = {% if minpython < 8 %}{version = "*", markers = "python_version >= '3.8'"}{% else %}"*"{% endif %}
 {{ cookiecutter.repo_name }} = {editable = true, path = "."}
 
 [packages]
-
+{% if minpython < maxpython %}
+[requires]
+python_version = "{{ cookiecutter.requires_python }}"
+{% endif %}
 [scripts]
-setup = "pipenv install --dev --skip-lock"
+setup = "pipenv sync --dev"
 test = "pytest"
+lint = "pre-commit run -a"
 docs = "mkdocs serve"
 build = "python -m build"
-# upload = "twine upload dist/*"
+update = "bash -c 'pipenv update --dev && pre-commit autoupdate'"
 publish = "mkdocs gh-deploy --force"
-clean = "rm -rf .pytest_cache .venv build dist .tox src/{{ cookiecutter.project_slug }}.egg-info tests/__pycache__ .coverage Pipfile.lock"
+clean = "git clean -fX ."

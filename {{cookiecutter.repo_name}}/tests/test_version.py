@@ -1,2 +1,2 @@
 def test_version(version):
-    assert version != '0.0.0.dev0'
+    assert version != "0.0.0.dev0"
