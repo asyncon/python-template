@@ -13,6 +13,7 @@ build = "*"
 isort = "*"
 autoflake = "*"
 pre-commit = "*"
+pre-commit-hooks = "*"
 {%- set year | int %}{% now 'local', '%Y' %}{% endset %}{% set maxpython = year - 2012 %}
 {%- set minpython = cookiecutter.requires_python.split('.')[1] | int %}
 mkdocs-material = {% if minpython < 8 %}{version = "*", markers = "python_version >= '3.8'"}{% else %}"*"{% endif %}

@@ -1,16 +1,110 @@
-[build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm>=3.4", "setuptools-pipfile>=0.7"]
-build-backend = "setuptools.build_meta"
-{% set year | int %}{% now 'local', '%Y' %}{% endset %}{% set maxpython = year - 2012 -%}
+{% set year | int %}{% now 'local', '%Y' %}{% endset %}{% set maxpython = year - 2011 -%}
 {% set minpython = cookiecutter.requires_python.split('.')[1] | int -%}
-{% if minpython < maxpython %}
+[build-system]
+requires = ["setuptools>=61", "wheel", "setuptools_scm>=3.4", "setuptools-pipfile>=0.7"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{ cookiecutter.repo_name }}"
+description = "{{ cookiecutter.project_short_description }}"
+requires-python = ">={{ cookiecutter.requires_python }}"
+authors = [
+	{name = "{{ cookiecutter.full_name }}", email = "{{ cookiecutter.email }}"},
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+dynamic = ["version", "dependencies", "optional-dependencies"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: {{ cookiecutter.audience }}",
+{%- if cookiecutter.open_source_license == 'UNKNOWN' %}
+    "License :: Other/Proprietary License",
+{%- else %}
+    "License :: OSI Approved :: {{ cookiecutter.open_source_license }}",
+{%- endif %}
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+{%- for v in range(minpython, maxpython) %}
+    "Programming Language :: Python :: 3.{{ v }}",
+{%- endfor %}
+]
+
+# [project.entry-points."{{ cookiecutter.project_slug }}.plugin"]
+# default = "{{ cookiecutter.project_slug }}.plugin:DefaultPlugin"
+
+# [project.scripts]
+# {{ cookiecutter.repo_name }} = "{{ cookiecutter.project_slug }}.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}"
+Documentation = "https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.repo_name }}/"
+Source = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}"
+Tracker = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.repo_name }}/issues"
+{% if minpython < maxpython - 1 %}
 [tool.black]
 target-version = ["py3{{ cookiecutter.requires_python.split('.')[1] }}"]
 {% endif %}
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["{{ cookiecutter.project_slug }}", "tests"]
+
+[tool.coverage.report]
+show_missing = true
+precision = 2
+
 [tool.isort]
 profile = "black"
+
+[tool.pytest.ini_options]
+addopts = "-p no:warnings --cov --cov-report term-missing"
+
+[tools.setuptools]
+zip_safe = true
+
+[tools.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools_scm]
 
 [tool.setuptools-pipfile]
 extras = 3
+
+[tool.tox]
+legacy_tox_ini = '''
+[tox]
+{%- if minpython < maxpython - 1 %}
+envlist = lint,report{% for v in range(minpython, maxpython) %},py3{{ v }}{% endfor %}
+skip_missing_interpreters = {env:TOX_SKIP_MISSING_INTERPRETERS:False}
+{%- else %}
+envlist = lint,py
+{%- endif %}
+isolated_build = True
+
+[testenv:lint]
+commands = pre-commit run -a
+
+[testenv]
+extras = dev
+{%- if minpython < maxpython - 1 %}
+depends = report: py{% for v in range(minpython, maxpython) %},py3{{ v }}{% endfor %}
+setenv = COVERAGE_FILE = .coverage.{envname}
+commands = pytest
+
+[testenv:report]
+setenv = COVERAGE_FILE = .coverage
+skip_install = True
+deps = coverage
+commands =
+    coverage combine
+    coverage html
+    coverage xml
+    coverage report --fail-under=100
+{%- else %}
+commands = pytest --cov-report=xml --cov-fail-under=100
+{%- endif %}
+'''
