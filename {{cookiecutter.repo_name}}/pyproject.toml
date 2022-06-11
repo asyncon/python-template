@@ -63,10 +63,10 @@ profile = "black"
 [tool.pytest.ini_options]
 addopts = "-p no:warnings --cov --cov-report term-missing"
 
-[tools.setuptools]
-zip_safe = true
+[tool.setuptools]
+zip-safe = true
 
-[tools.setuptools.packages.find]
+[tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools_scm]
